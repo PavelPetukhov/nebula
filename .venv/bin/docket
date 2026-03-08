@@ -1,0 +1,6 @@
+#!/Users/pasha/sandbox/agentflow-agents/.venv/bin/python3
+import sys
+from docket.__main__ import app
+if __name__ == '__main__':
+    sys.argv[0] = sys.argv[0].removesuffix('.exe')
+    sys.exit(app())

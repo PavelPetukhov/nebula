@@ -1,0 +1,2 @@
+import{j as s,L as e}from"./vendor-tanstack-BpuysabX.js";import{B as a,g as r,h as o,q as i,I as t}from"./index-BI6MYxUq.js";const n=()=>s.jsxs("div",{className:"flex items-center gap-2",children:[s.jsx(a,{children:s.jsx(r,{children:s.jsx(o,{className:"text-xl font-semibold",children:"Work pools"})})}),s.jsx(e,{to:"/work-pools/create",children:s.jsx(i,{size:"icon",className:"size-7",variant:"outline",children:s.jsx(t,{id:"Plus",className:"size-4"})})})]});export{n as W};
+//# sourceMappingURL=header-BCtgOAs-.js.map

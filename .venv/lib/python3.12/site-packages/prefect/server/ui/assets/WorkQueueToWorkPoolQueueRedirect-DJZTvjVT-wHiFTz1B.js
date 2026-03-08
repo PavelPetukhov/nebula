@@ -1,0 +1,2 @@
+import{d as t,v as n,S as k,j as l,u as m,f as p}from"./index-CWv_Pcr2.js";const c=t({__name:"WorkQueueToWorkPoolQueueRedirect",setup(w){const u=n("workQueueId"),s=k(),a=l(s.workQueues.getWorkQueue,[u]),o=m(),r=p();return a.promise().then(({response:e})=>{if(!e.workPoolName){o.replace(r.workPools());return}o.replace(r.workPoolQueue(e.workPoolName,e.name))}),()=>{}}});export{c as default};
+//# sourceMappingURL=WorkQueueToWorkPoolQueueRedirect-DJZTvjVT-wHiFTz1B.js.map
