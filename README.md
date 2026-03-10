@@ -16,13 +16,12 @@ Multi-agent AI governance system. Each agent is a specialized, autonomous operat
 
 ```
 agents/
-  langfuse_agent/   # Trace anomaly detection
-  mlflow_agent/     # Governance & compliance
+  langfuse_agent/     # Trace anomaly detection
+  mlflow_agent/       # Governance & compliance
   label_studio_agent/ # Annotation quality
-orchestrator/       # Master agent (Phase 4)
-mcp_server/         # External interface (Phase 5)
-flows/              # Prefect flow definitions
-shared/             # Models, auth, alerts
+orchestrator/         # Master agent (Phase 4)
+mcp_server/           # External interface (Phase 5)
+shared/               # Models, auth, alerts
 tests/
 ```
 
@@ -32,7 +31,8 @@ tests/
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -e ".[dev]"
-cp .env.example .env  # fill in endpoints and keys
+pip install "google-adk[extensions]"
+cp .env.example .env  # fill in service endpoints and keys
 ```
 
 ## Running Tests
@@ -53,5 +53,5 @@ All configuration is via environment variables. See `.env.example` for the full 
 ## Design Principles
 
 - **Deterministic anomaly logic** — all statistical scoring is pure Python; the LLM layer generates narratives only
-- **Independently deployable** — each agent runs as its own Prefect flow with no shared runtime state
+- **Independently deployable** — each agent runs independently with no shared runtime state
 - **No external network calls** — all services are internal

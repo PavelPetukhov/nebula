@@ -30,7 +30,7 @@ class LangFuseAgentConfig(BaseSettings):
     alert_channel: str = "slack"
 
     # ADK model
-    model: str = "claude-sonnet-4-6"
+    model: str = "anthropic/claude-sonnet-4-6"
 
 
 config = LangFuseAgentConfig()

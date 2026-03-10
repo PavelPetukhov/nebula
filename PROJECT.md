@@ -10,7 +10,6 @@ the organization.
 - **MLflow 3** — Experiment tracking, compliance reporting, model governance
 - **Label Studio** — Human-in-the-loop annotation workflows
 - **LangFuse** — Production AI observability and tracing
-- **Prefect** — Pipeline orchestration and scheduling
 - **DVC** — Dataset versioning
 
 **Infrastructure:**
@@ -32,9 +31,8 @@ AgentFlow platform component. Agents run independently but can be orchestrated f
 cross-cutting workflows. External clients (Claude.ai, Claude Code, internal tooling) communicate
 with the system through a single MCP server that acts as the front door.
 
-**Framework:** Google ADK (Agent Development Kit)  
-**External interface:** MCP Server (single entry point for all external consumers)  
-**Scheduling:** Prefect (already deployed)  
+**Framework:** Google ADK (Agent Development Kit)
+**External interface:** MCP Server (single entry point for all external consumers)
 **Tracing the agents themselves:** LangFuse (recursive — agents are also governed)
 
 ---
@@ -112,7 +110,7 @@ Anomaly logic must be **deterministic Python** (statistical functions). The LLM 
 only interpretation and alert narrative generation. This is non-negotiable for audit
 reproducibility.
 
-**Trigger:** Prefect schedule, every N hours (configurable per team SLA)
+**Trigger:** ADK runner, every N hours (configurable per team SLA)
 
 ---
 
@@ -132,7 +130,7 @@ from MLflow across teams.
 - Alert when teams log experiments without required governance metadata
 - Cross-team experiment comparison reports for leadership
 
-**Trigger:** Prefect nightly schedule + on-demand via API
+**Trigger:** ADK runner, nightly + on-demand via MCP
 
 ---
 
@@ -147,7 +145,7 @@ HITL queue backlogs.
 - `flag_low_agreement_tasks(project)` — Surface tasks with annotator disagreement
 - `generate_annotation_report(project, period)` — Weekly annotation quality summary
 
-**Trigger:** Prefect schedule, configurable per project
+**Trigger:** ADK runner, configurable per project
 
 ---
 
@@ -177,8 +175,8 @@ The LLM layer is used only to generate human-readable summaries and alert messag
 This ensures reproducibility for compliance and audit teams.
 
 ### 2. Each agent is independently deployable
-No shared state between agents at runtime. Each agent is a separate Prefect flow with its
-own schedule, failure handling, and alerting. One agent crashing does not affect others.
+No shared state between agents at runtime. Each agent runs independently with its own
+schedule, failure handling, and alerting. One agent crashing does not affect others.
 
 ### 3. Agents are themselves governed
 All agent runs are traced in LangFuse (recursive governance). Agent runs should also log
@@ -197,7 +195,7 @@ deployed internally. This is a hard infrastructure constraint.
 ## Suggested Project Structure
 
 ```
-agentflow-agents/
+nebula/
 │
 ├── mcp_server/                   # Phase 5 — external-facing front door
 │   ├── server.py                 # MCP server definition and tool registration
@@ -227,11 +225,6 @@ agentflow-agents/
 │       ├── quality.py            # Agreement scoring logic
 │       └── config.py
 │
-├── flows/
-│   ├── langfuse_flow.py          # Prefect flow wrapping LangFuse agent
-│   ├── mlflow_flow.py
-│   └── label_studio_flow.py
-│
 ├── shared/
 │   ├── auth.py                   # GDT token / header auth helpers
 │   ├── alerts.py                 # Unified alert dispatching
@@ -250,11 +243,11 @@ agentflow-agents/
 
 | Phase | Deliverable | Notes |
 |---|---|---|
-| 1 | LangFuse Anomaly Detection Agent | ADK + Prefect, standalone |
-| 2 | MLflow Governance & Compliance Agent | ADK + Prefect, standalone |
-| 3 | Label Studio Annotation Quality Agent | ADK + Prefect, standalone |
-| 4 | AgentFlow Orchestrator Agent | ADK master agent, routes to 1-3 |
-| 5 | AgentFlow MCP Server | Front door — only after orchestrator is stable |
+| 1 | LangFuse Anomaly Detection Agent | ADK, standalone |
+| 2 | MLflow Governance & Compliance Agent | ADK, standalone |
+| 3 | Label Studio Annotation Quality Agent | ADK, standalone |
+| 4 | Orchestrator Agent | ADK master agent, routes to 1-3 |
+| 5 | MCP Server | Front door — only after orchestrator is stable |
 
 **Do not build Phase 5 until Phase 4 is stable.** The MCP server is only valuable once
 the orchestrator has something meaningful to expose.
@@ -263,7 +256,7 @@ the orchestrator has something meaningful to expose.
 
 ## Out of Scope (for now)
 
-- UI for agent management (use Prefect UI for run visibility)
+- UI for agent management
 - Agent self-healing or auto-remediation (alert and report only)
 - External system integration beyond LangFuse, MLflow, Label Studio
 - Real-time streaming (scheduled batch runs are sufficient)

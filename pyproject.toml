@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "agentflow-agents"
 version = "0.1.0"
-description = "AgentFlow Multi-Agent System — AI governance platform agents"
+description = "Nebula — Multi-agent AI governance system"
 requires-python = ">=3.12"
 dependencies = [
     # Agent framework
@@ -16,8 +16,6 @@ dependencies = [
     "mlflow>=2.0.0",
     # Annotation platform
     "label-studio-sdk>=1.0.0",
-    # Orchestration
-    "prefect>=3.0.0",
     # MCP server
     "mcp[cli]>=1.0.0",
     # Data validation
@@ -42,7 +40,7 @@ dev = [
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["agents*", "mcp_server*", "orchestrator*", "flows*", "shared*"]
+include = ["agents*", "mcp_server*", "orchestrator*", "shared*"]
 
 [tool.ruff]
 line-length = 100

@@ -25,7 +25,7 @@ def _overall_severity(findings: list[AnomalyFinding]) -> Severity:
 def run_anomaly_check(project: str, hours: int | None = None) -> dict:
     """
     Entry-point tool: fetch traces, score anomalies, dispatch alert if needed.
-    Returns a dict summary suitable for Prefect task output and MCP responses.
+    Returns a dict summary suitable for MCP responses.
     """
     hours = hours or config.default_trace_hours
     lf = Langfuse(
@@ -34,7 +34,10 @@ def run_anomaly_check(project: str, hours: int | None = None) -> dict:
         host=config.langfuse_host,
     )
 
-    with lf.trace(name="langfuse_anomaly_check", metadata={"project": project, "hours": hours}) as trace:
+    with lf.start_as_current_span(
+        name="langfuse_anomaly_check",
+        input={"project": project, "hours": hours},
+    ):
         current = fetch_recent_traces(project, hours)
         baseline = fetch_baseline_stats(project, config.baseline_lookback_days)
         findings = compute_anomaly_score(
@@ -71,8 +74,9 @@ def run_anomaly_check(project: str, hours: int | None = None) -> dict:
         else:
             result["alert_dispatched"] = False
 
-        trace.update(output=result)
+        lf.update_current_trace(output=result)
 
+    lf.flush()
     return result
 
 
@@ -94,3 +98,5 @@ langfuse_agent = Agent(
     ),
     tools=[run_anomaly_check],
 )
+
+root_agent = langfuse_agent
