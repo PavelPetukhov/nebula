@@ -24,3 +24,5 @@ label_studio_agent = Agent(
     ),
     tools=[fetch_annotation_stats, detect_queue_backlog, flag_low_agreement_tasks],
 )
+
+root_agent = label_studio_agent

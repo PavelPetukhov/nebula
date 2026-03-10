@@ -28,3 +28,5 @@ mlflow_agent = Agent(
     ),
     tools=[fetch_experiments, check_governance_completeness, detect_experiment_anomalies],
 )
+
+root_agent = mlflow_agent
