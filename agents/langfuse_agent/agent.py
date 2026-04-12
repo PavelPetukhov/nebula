@@ -4,12 +4,14 @@ import logging
 from datetime import datetime
 
 from google.adk.agents import Agent
+from google.adk.models.anthropic_llm import AnthropicLlm
 from langfuse import Langfuse
 
 from agents.langfuse_agent.anomaly import compute_anomaly_score
 from agents.langfuse_agent.config import config
 from agents.langfuse_agent.tools import fetch_baseline_stats, fetch_recent_traces
 from shared.alerts import dispatch_alert
+from shared.mlflow_tracking import MLflowAdkTracker
 from shared.models import AlertPayload, AnomalyFinding, Severity
 
 logger = logging.getLogger(__name__)
@@ -80,10 +82,12 @@ def run_anomaly_check(project: str, hours: int | None = None) -> dict:
     return result
 
 
+_tracker = MLflowAdkTracker()
+
 # ADK Agent definition
 langfuse_agent = Agent(
     name="langfuse_anomaly_agent",
-    model=config.model,
+    model=AnthropicLlm(model=config.model),
     description=(
         "Monitors production AI traces in LangFuse. "
         "Detects quality, latency, token usage, error rate, and volume anomalies. "
@@ -97,6 +101,12 @@ langfuse_agent = Agent(
         "When anomalies are found, explain what they mean in plain language for the on-call team."
     ),
     tools=[run_anomaly_check],
+    before_agent_callback=_tracker.before_agent_callback,
+    after_agent_callback=_tracker.after_agent_callback,
+    before_tool_callback=_tracker.before_tool_callback,
+    after_tool_callback=_tracker.after_tool_callback,
+    before_model_callback=_tracker.before_model_callback,
+    after_model_callback=_tracker.after_model_callback,
 )
 
 root_agent = langfuse_agent

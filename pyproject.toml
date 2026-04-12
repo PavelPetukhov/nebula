@@ -26,6 +26,8 @@ dependencies = [
     # Statistical anomaly detection
     "numpy>=1.26.0",
     "scipy>=1.13.0",
+    # MLflow ADK tracing (OpenTelemetry → MLflow)
+    "opentelemetry-exporter-otlp-proto-http>=1.0.0",
     # Env management
     "python-dotenv>=1.0.0",
 ]
